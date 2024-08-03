@@ -158,14 +158,22 @@ class GPTAssistantAgent(ConversableAgent):
                 logger.warning(
                     "overwrite_tools is True. Provided tools will be used and will modify the assistant in the API"
                 )
+                
+                # print('before update')
+                # print(openai_assistant_cfg.get("tool_resources", None))
+
                 self._openai_assistant = update_gpt_assistant(
                     self._openai_client,
                     assistant_id=openai_assistant_id,
                     assistant_config={
                         "tools": specified_tools,
                         "tool_resources": openai_assistant_cfg.get("tool_resources", None),
+                        "temperature": openai_assistant_cfg.get("temperature",None),
                     },
                 )
+
+                # print('after update')
+                # print(openai_assistant_cfg.get("tool_resources", None))
             else:
                 # Tools are specified but overwrite_tools is False; do not update the assistant's tools
                 logger.warning("overwrite_tools is False. Using existing tools from assistant API.")
@@ -506,7 +514,7 @@ class GPTAssistantAgent(ConversableAgent):
 
         # Move the assistant related configurations to assistant_config
         # It's important to keep forward compatibility
-        assistant_config_items = ["assistant_id", "tools", "file_ids", "tool_resources", "check_every_ms"]
+        assistant_config_items = ["assistant_id", "tools", "file_ids", "tool_resources", "check_every_ms", "temperature"]
         for item in assistant_config_items:
             if openai_client_cfg.get(item) is not None and openai_assistant_cfg.get(item) is None:
                 openai_assistant_cfg[item] = openai_client_cfg[item]

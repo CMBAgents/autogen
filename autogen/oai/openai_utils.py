@@ -781,6 +781,9 @@ def update_gpt_assistant(client: OpenAI, assistant_id: str, assistant_config: Di
     if assistant_config.get("tools") is not None:
         assistant_update_kwargs["tools"] = assistant_config["tools"]
 
+    if assistant_config.get("temperature") is not None:
+        assistant_update_kwargs["temperature"] = assistant_config["temperature"]
+
     if assistant_config.get("instructions") is not None:
         assistant_update_kwargs["instructions"] = assistant_config["instructions"]
 
