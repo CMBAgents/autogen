@@ -128,13 +128,13 @@ class GPTAssistantAgent(ConversableAgent):
                 logger.warning(
                     "overwrite_instructions is True. Provided instructions will be used and will modify the assistant in the API"
                 )
-                self._openai_assistant = update_gpt_assistant(
-                    self._openai_client,
-                    assistant_id=openai_assistant_id,
-                    assistant_config={
-                        "instructions": instructions,
-                    },
-                )
+                # self._openai_assistant = update_gpt_assistant(
+                #     self._openai_client,
+                #     assistant_id=openai_assistant_id,
+                #     assistant_config={
+                #         "instructions": instructions,
+                #     },
+                # )
             else:
                 logger.warning(
                     "overwrite_instructions is False. Provided instructions will be used without permanently modifying the assistant in the API."
@@ -161,14 +161,17 @@ class GPTAssistantAgent(ConversableAgent):
                 
                 # print('before update')
                 # print(openai_assistant_cfg.get("tool_resources", None))
+                # print('before update_gpt_assistant:',assistant_config['tool_resources'])
 
                 self._openai_assistant = update_gpt_assistant(
                     self._openai_client,
                     assistant_id=openai_assistant_id,
                     assistant_config={
+                        "instructions": instructions,
                         "tools": specified_tools,
-                        "tool_resources": openai_assistant_cfg.get("tool_resources", None),
+                        "tool_resources": assistant_config['tool_resources'],
                         "temperature": openai_assistant_cfg.get("temperature",None),
+                        "top_p": openai_assistant_cfg.get("top_p",None),
                     },
                 )
 
@@ -514,7 +517,7 @@ class GPTAssistantAgent(ConversableAgent):
 
         # Move the assistant related configurations to assistant_config
         # It's important to keep forward compatibility
-        assistant_config_items = ["assistant_id", "tools", "file_ids", "tool_resources", "check_every_ms", "temperature"]
+        assistant_config_items = ["assistant_id", "tools", "file_ids", "tool_resources", "check_every_ms", "temperature", "top_p"]
         for item in assistant_config_items:
             if openai_client_cfg.get(item) is not None and openai_assistant_cfg.get(item) is None:
                 openai_assistant_cfg[item] = openai_client_cfg[item]

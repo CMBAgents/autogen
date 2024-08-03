@@ -784,15 +784,26 @@ def update_gpt_assistant(client: OpenAI, assistant_id: str, assistant_config: Di
     if assistant_config.get("temperature") is not None:
         assistant_update_kwargs["temperature"] = assistant_config["temperature"]
 
+    if assistant_config.get("top_p") is not None:
+        assistant_update_kwargs["top_p"] = assistant_config["top_p"]
+
     if assistant_config.get("instructions") is not None:
         assistant_update_kwargs["instructions"] = assistant_config["instructions"]
 
-    if gpt_assistant_api_version == "v2":
-        if assistant_config.get("tool_resources") is not None:
-            assistant_update_kwargs["tool_resources"] = assistant_config["tool_resources"]
+    # if gpt_assistant_api_version == "v2":
+    # print('gpt_assistant updated with config:',assistant_config)
+    if assistant_config.get("tool_resources") is not None:
+    
+        assistant_update_kwargs["tool_resources"] = assistant_config["tool_resources"]
+
     else:
-        if assistant_config.get("file_ids") is not None:
-            assistant_update_kwargs["file_ids"] = assistant_config["file_ids"]
+
+        print('tool_resources not found')
+    
+    # print('gpt_assistant updated with assistant_update_kwargs:',assistant_update_kwargs)
+    # else:
+    #     if assistant_config.get("file_ids") is not None:
+    #         assistant_update_kwargs["file_ids"] = assistant_config["file_ids"]
 
     return client.beta.assistants.update(assistant_id=assistant_id, **assistant_update_kwargs)
 
