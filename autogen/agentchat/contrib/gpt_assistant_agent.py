@@ -10,6 +10,7 @@ from autogen.agentchat.agent import Agent
 from autogen.agentchat.assistant_agent import AssistantAgent, ConversableAgent
 from autogen.oai.openai_utils import create_gpt_assistant, retrieve_assistants_by_name, update_gpt_assistant
 from autogen.runtime_logging import log_new_agent, logging_enabled
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -250,6 +251,12 @@ class GPTAssistantAgent(ConversableAgent):
 
         self._unread_index[sender] = len(self._oai_messages[sender]) + 1
         return True, response
+    
+
+    def remove_numerical_references(self,text):
+        # Remove numerical references of format [0], [1], etc.
+        cleaned_text = re.sub(r'\[\d+\]', '', text)
+        return cleaned_text
 
     def _get_run_response(self, thread, run):
         """
@@ -271,9 +278,12 @@ class GPTAssistantAgent(ConversableAgent):
                     if msg.run_id == run.id:
                         for content in msg.content:
                             if content.type == "text":
+                                # Remove numerical references from the content
+                                cleaned_content = self.remove_numerical_references(self._format_assistant_message(content.text))
                                 new_messages.append(
-                                    {"role": msg.role, "content": self._format_assistant_message(content.text)}
+                                    {"role": msg.role, "content": cleaned_content}
                                 )
+                                # print(new_messages)
                             elif content.type == "image_file":
                                 new_messages.append(
                                     {
@@ -281,6 +291,7 @@ class GPTAssistantAgent(ConversableAgent):
                                         "content": f"Received file id={content.image_file.file_id}",
                                     }
                                 )
+                    
                 return new_messages
             elif run.status == "requires_action":
                 actions = []
@@ -344,6 +355,8 @@ class GPTAssistantAgent(ConversableAgent):
 
         # Iterate over the annotations and add footnotes
         for index, annotation in enumerate(annotations):
+            # print('annotation.text',annotation.text)
+            # print('annotation',annotation)
             # Replace the text with a footnote
             message_content.value = message_content.value.replace(annotation.text, f" [{index}]")
 
@@ -351,19 +364,22 @@ class GPTAssistantAgent(ConversableAgent):
             if file_citation := getattr(annotation, "file_citation", None):
                 try:
                     cited_file = self._openai_client.files.retrieve(file_citation.file_id)
-                    citations.append(f"[{index}] {cited_file.filename}: {file_citation.quote}")
+                    # citations.append(f"[{index}] {cited_file.filename}: {file_citation.quote}")
+                    citations.append(f"{cited_file.filename}: {file_citation.quote}")
                 except Exception as e:
                     logger.error(f"Error retrieving file citation: {e}")
             elif file_path := getattr(annotation, "file_path", None):
                 try:
                     cited_file = self._openai_client.files.retrieve(file_path.file_id)
-                    citations.append(f"[{index}] Click <here> to download {cited_file.filename}")
+                    # citations.append(f"[{index}] Click <here> to download {cited_file.filename}")
+                    citations.append(f"{cited_file.filename}")
                 except Exception as e:
                     logger.error(f"Error retrieving file citation: {e}")
                 # Note: File download functionality not implemented above for brevity
 
         # Add footnotes to the end of the message before displaying to user
         message_content.value += "\n" + "\n".join(citations)
+        # print('citations:',citations)
         return message_content.value
 
     def can_execute_function(self, name: str) -> bool:
