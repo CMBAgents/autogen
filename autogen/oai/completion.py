@@ -201,6 +201,9 @@ class Completion(openai_Completion):
 
         Try cache first. If not found, call the openai api. If the api call fails, retry after retry_wait_time.
         """
+        # print("\n\n")
+        # print("\t\t\t\toai.completion.py in def _get_response: config: ", config)
+        # print("\t\t\t\toai.completion.py will call api")
         config = config.copy()
         key = get_key(config)
         if use_cache:
@@ -792,7 +795,7 @@ class Completion(openai_Completion):
         )
         if ERROR:
             raise ERROR
-
+        # print("\t\t\t creating completion")
         # Warn if a config list was provided but was empty
         if isinstance(config_list, list) and len(config_list) == 0:
             logger.warning(

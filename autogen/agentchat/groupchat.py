@@ -619,7 +619,12 @@ class GroupChat:
             return self._validate_speaker_name(recipient, messages, sender, config, attempts_left, attempt, agents)
 
         # Two-agent chat for speaker selection
+        # print()
+        # print("groupchat.py setting up two-agent chat to select speaker")
+        # print("groupchat.py max_attempts: ", max_attempts)
 
+
+        # print("groupchat.py setting up checking_agent")
         # Agent for checking the response from the speaker_select_agent
         checking_agent = ConversableAgent("checking_agent", default_auto_reply=max_attempts)
 
@@ -632,6 +637,8 @@ class GroupChat:
 
         # NOTE: Do we have a speaker prompt (select_speaker_prompt_template is not None)? If we don't, we need to feed in the last message to start the nested chat
 
+        # print("groupchat.py setting up speaker_selection_agent")
+        # print("groupchat.py chat_messages: ", messages)
         # Agent for selecting a single agent name from the response
         speaker_selection_agent = ConversableAgent(
             "speaker_selection_agent",
@@ -644,17 +651,32 @@ class GroupChat:
             llm_config=selector.llm_config,
             human_input_mode="NEVER",  # Suppresses some extra terminal outputs, outputs will be handled by select_speaker_auto_verbose
         )
+        # print("\n")
+        # print("\tgroupchat.py speaker_selection_agent setup done with chat_messages: ", speaker_selection_agent.chat_messages)
+        # print("\n")
 
         # Create the starting message
         if self.select_speaker_prompt_template is not None:
+            # print("\n")
+            # print("\tgroupchat.py creating starting message")
+            # print("\tgroupchat.py select_speaker_prompt_template: ", self.select_speaker_prompt_template)
+            # print("\tgroupchat.py agents: ", agents)
+            # print("\n")
             start_message = {
                 "content": self.select_speaker_prompt(agents),
                 "override_role": self.role_for_select_speaker_messages,
             }
+            # print("\n")
+            # print("\tgroupchat.py start_message: ", start_message)
+            # print("\n")
         else:
+            # print("groupchat.py creating starting message without template. Using last messages.")
+            # print("groupchat.py messages[-1]: ", messages[-1])
             start_message = messages[-1]
 
         # Run the speaker selection chat
+        # print("\n")
+        # print("\tgroupchat.py running speaker selection chat")
         result = checking_agent.initiate_chat(
             speaker_selection_agent,
             cache=None,  # don't use caching for the speaker selection chat
@@ -664,6 +686,11 @@ class GroupChat:
             clear_history=False,
             silent=not self.select_speaker_auto_verbose,  # Base silence on the verbose attribute
         )
+
+        # print("groupchat.py speaker selection chat result: ", result)
+        # print("\n")
+        # import sys
+        # sys.exit(0)
 
         return self._process_speaker_selection_result(result, last_speaker, agents)
 
@@ -1020,6 +1047,15 @@ class GroupChatManager(ConversableAgent):
         groupchat = config
         send_introductions = getattr(groupchat, "send_introductions", False)
         silent = getattr(self, "_silent", False)
+
+        # print()
+        # print("groupchat.py run_chat message: ", message)
+        # print()
+        # print("groupchat.py run_chat sender: ", sender.name)
+        # print()
+        # print("groupchat.py run_chat speaker: ", speaker.name)
+        # print()
+
 
         if send_introductions:
             # Broadcast the intro

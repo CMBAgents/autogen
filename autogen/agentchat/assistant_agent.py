@@ -77,3 +77,9 @@ Reply "TERMINATE" in the end when everything is done.
         if description is None:
             if system_message == self.DEFAULT_SYSTEM_MESSAGE:
                 self.description = self.DEFAULT_DESCRIPTION
+
+        # print()
+        # print(f"AssistantAgent {name} created with description: {self.description}")
+        # print("and instructions:")
+        # print(self.system_message)
+        # print()

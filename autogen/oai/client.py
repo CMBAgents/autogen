@@ -200,6 +200,8 @@ class OpenAIClient:
         """
         iostream = IOStream.get_default()
 
+        # print("\n\nOpenAI client.py in def create: params: ", params)
+
         completions: Completions = self._oai_client.chat.completions if "messages" in params else self._oai_client.completions  # type: ignore [attr-defined]
         # If streaming is enabled and has messages, then iterate over the chunks of the response.
         if params.get("stream", False) and "messages" in params:
@@ -637,6 +639,7 @@ class OpenAIWrapper:
             - RuntimeError: If all declared custom model clients are not registered
             - APIError: If any model client create call raises an APIError
         """
+        # print("\n\nOpenAI client.py in def create OpenAIWrapper: config: ", config)
         if ERROR:
             raise ERROR
         invocation_id = str(uuid.uuid4())

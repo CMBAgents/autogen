@@ -205,7 +205,8 @@ class GPTAssistantAgent(ConversableAgent):
         Returns:
             A tuple containing a boolean indicating success and the assistant's reply.
         """
-
+        # print("\n\n")
+        # print("\t\t gpt_assistant_agent.py in def _invoke_assistant: messages: ", messages)
         if messages is None:
             messages = self._oai_messages[sender]
         unread_index = self._unread_index[sender] or 0
@@ -213,19 +214,28 @@ class GPTAssistantAgent(ConversableAgent):
 
         # Check and initiate a new thread if necessary
         if self._openai_threads.get(sender, None) is None:
+            # print("\t\t gpt_assistant_agent.py in def _invoke_assistant: creating new thread")
             self._openai_threads[sender] = self._openai_client.beta.threads.create(
                 messages=[],
             )
+
+        
         assistant_thread = self._openai_threads[sender]
+
+        # print("\t\t gpt_assistant_agent.py in def _invoke_assistant: assistant_thread: ", assistant_thread)
         # Process each unread message
         for message in pending_messages:
             if message["content"].strip() == "":
                 continue
+            # print("\t\t gpt_assistant_agent.py in def _invoke_assistant: passing content: ", message["content"])
+            # print("\t\t gpt_assistant_agent.py in def _invoke_assistant: passing role: ", message["role"])
             self._openai_client.beta.threads.messages.create(
                 thread_id=assistant_thread.id,
                 content=message["content"],
                 role=message["role"],
             )
+
+        # print("\t\t gpt_assistant_agent.py in def _invoke_assistant: thread created")
 
         # Create a new run to get responses from the assistant
         run = self._openai_client.beta.threads.runs.create(
@@ -234,8 +244,13 @@ class GPTAssistantAgent(ConversableAgent):
             # pass the latest system message as instructions
             instructions=self.system_message,
         )
+        # print("\t\t gpt_assistant_agent.py in def _invoke_assistant: run done")
+
 
         run_response_messages = self._get_run_response(assistant_thread, run)
+        # print("gpt_assistant_agent.py in def _invoke_assistant: run_response_messages: ", run_response_messages)
+        # import sys
+        # sys.exit(0)
         assert len(run_response_messages) > 0, "No response from the assistant."
 
         response = {

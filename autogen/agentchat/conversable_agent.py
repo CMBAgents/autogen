@@ -139,6 +139,10 @@ class ConversableAgent(LLMAgent):
             self._oai_messages = defaultdict(list)
         else:
             self._oai_messages = chat_messages
+        # print("\n")
+        # print("\tconversable_agent.py ConversableAgent for agent: ", self._name)
+        # print("\tconversable_agent.py self._oai_messages initialized with : ", self._oai_messages)
+        # print("\n")
 
         self._oai_system_message = [{"content": system_message, "role": "system"}]
         self._description = description if description is not None else system_message
@@ -572,6 +576,12 @@ class ConversableAgent(LLMAgent):
         Returns:
             bool: whether the message is appended to the ChatCompletion conversation.
         """
+        # print()
+        # print("\t\tconversable_agent.py  in _append_oai_message")
+        # print("\t\tconversable_agent.py  in _append_oai_message message: ", message)
+        # print("\t\tconversable_agent.py  in _append_oai_message role: ", role)
+        # print("\t\tconversable_agent.py conversation_id in _append_oai_message: ", conversation_id.name)
+        # print("\t\tconversable_agent.py  in _append_oai_message self._oai_messages before appending: ", self._oai_messages)
         message = self._message_to_dict(message)
         # create oai message to be appended to the oai conversation that can be passed to oai directly.
         oai_message = {
@@ -598,6 +608,7 @@ class ConversableAgent(LLMAgent):
         if oai_message.get("function_call", False) or oai_message.get("tool_calls", False):
             oai_message["role"] = "assistant"  # only messages with role 'assistant' can have a function call.
         self._oai_messages[conversation_id].append(oai_message)
+        # print("\t\tconversable_agent.py  in _append_oai_message self._oai_messages after appending: ", self._oai_messages)
         return True
 
     def _process_message_before_send(
@@ -605,6 +616,12 @@ class ConversableAgent(LLMAgent):
     ) -> Union[Dict, str]:
         """Process the message before sending it to the recipient."""
         hook_list = self.hook_lists["process_message_before_send"]
+        # print()
+        # print(f"conversable_agent.py {self.name} sending message to: ", recipient.name)
+        # print("conversable_agent.py processing message before send")
+        # print("conversable_agent.py hook_list: ", hook_list)
+        # print("conversable_agent.py message: ", message)
+        # print()
         for hook in hook_list:
             message = hook(sender=self, message=message, recipient=recipient, silent=silent)
         return message
@@ -651,9 +668,19 @@ class ConversableAgent(LLMAgent):
         message = self._process_message_before_send(message, recipient, silent)
         # When the agent composes and sends the message, the role of the message is "assistant"
         # unless it's "function".
+        # print()
+        # print("\t\tconversable_agent.py appending message to oai_messages")
+        # print("\t\tconversable_agent.py message: ", message)
+        # print("\t\tconversable_agent.py recipient: ", recipient.name)
+        # print("\t\tconversable_agent.py appending message to oai messages using _append_oai_message")
         valid = self._append_oai_message(message, "assistant", recipient)
         if valid:
+            # print()
+            # print("conversable_agent.py -----> requesting reply to message: ", message)
+            # print("conversable_agent.py -----> requesting reply using self._oai_messages: ", self._oai_messages)
             recipient.receive(message, self, request_reply, silent)
+            # print("conversable_agent.py -----> reply to message received by: ", recipient.name)
+
         else:
             raise ValueError(
                 "Message can't be converted into a valid ChatCompletion message. Either content or function_call must be provided."
@@ -816,7 +843,10 @@ class ConversableAgent(LLMAgent):
         self._process_received_message(message, sender, silent)
         if request_reply is False or request_reply is None and self.reply_at_receive[sender] is False:
             return
+        # print("\t in conversable_agent.py in def receive: generating reply")
         reply = self.generate_reply(messages=self.chat_messages[sender], sender=sender)
+
+
         if reply is not None:
             self.send(reply, sender, silent=silent)
 
@@ -1338,6 +1368,7 @@ class ConversableAgent(LLMAgent):
             return False, None
         if messages is None:
             messages = self._oai_messages[sender]
+        # print("\n\nconversable_agent.py in def generate_oai_reply: messages: ", messages)
         extracted_response = self._generate_oai_reply_from_client(
             client, self._oai_system_message + messages, self.client_cache
         )
@@ -1345,6 +1376,7 @@ class ConversableAgent(LLMAgent):
 
     def _generate_oai_reply_from_client(self, llm_client, messages, cache) -> Union[str, Dict, None]:
         # unroll tool_responses
+        # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: messages: ", messages)
         all_messages = []
         for message in messages:
             tool_responses = message.get("tool_responses", [])
@@ -1357,9 +1389,12 @@ class ConversableAgent(LLMAgent):
                 all_messages.append(message)
 
         # TODO: #1143 handle token limit exceeded error
+        # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: all_messages: ", all_messages)
+        # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client using context: ", messages[-1].pop("context", None))
         response = llm_client.create(
             context=messages[-1].pop("context", None), messages=all_messages, cache=cache, agent=self
         )
+        # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: response: ", response)
         extracted_response = llm_client.extract_text_or_completion_object(response)[0]
 
         if extracted_response is None:
@@ -1603,10 +1638,12 @@ class ConversableAgent(LLMAgent):
         config: Optional[Any] = None,
     ) -> Tuple[bool, Union[Dict, None]]:
         """Generate a reply using tool call."""
+        # print("\n\nconversable_agent.py in def generate_tool_calls_reply: messages: ", messages)
         if config is None:
             config = self
         if messages is None:
             messages = self._oai_messages[sender]
+        # print("\n\nconversable_agent.py in def generate_tool_calls_reply: messages[-1] assigned: ", messages)
         message = messages[-1]
         tool_returns = []
         for tool_call in message.get("tool_calls", []):
@@ -1963,6 +2000,8 @@ class ConversableAgent(LLMAgent):
         # Message modifications do not affect the incoming messages or self._oai_messages.
         messages = self.process_all_messages_before_reply(messages)
 
+        # print("\n\nconversable_agent.py in def generate_reply: messages: ", messages)
+
         for reply_func_tuple in self._reply_func_list:
             reply_func = reply_func_tuple["reply_func"]
             if "exclude" in kwargs and reply_func in kwargs["exclude"]:
@@ -1981,6 +2020,8 @@ class ConversableAgent(LLMAgent):
                         reply=reply,
                     )
                 if final:
+                    # print("\n\nconversable_agent.py in def generate_reply: called reply_func: ", reply_func.__name__)
+                    # print("\n\nconversable_agent.py in def generate_reply: final reply: ", reply)
                     return reply
         return self._default_auto_reply
 
