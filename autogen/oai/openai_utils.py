@@ -13,6 +13,9 @@ from openai import OpenAI
 from openai.types.beta.assistant import Assistant
 from packaging.version import parse
 
+
+import sys
+
 NON_CACHE_KEY = [
     "api_key",
     "base_url",
@@ -806,8 +809,16 @@ def update_gpt_assistant(client: OpenAI, assistant_id: str, assistant_config: Di
     #     if assistant_config.get("file_ids") is not None:
     #         assistant_update_kwargs["file_ids"] = assistant_config["file_ids"]
 
-    return client.beta.assistants.update(assistant_id=assistant_id, **assistant_update_kwargs)
-
+    try:
+        return client.beta.assistants.update(assistant_id=assistant_id, **assistant_update_kwargs)
+    except Exception as e:
+        # Capture the error message and print it
+        # Access the first argument of the exception, which should contain the error details
+        error_details = e.args[0]
+    
+        print(f"{error_details}")
+        return 0 
+        # sys.exit(0) 
 
 def _satisfies(config_value: Any, acceptable_values: Any) -> bool:
     if isinstance(config_value, list):

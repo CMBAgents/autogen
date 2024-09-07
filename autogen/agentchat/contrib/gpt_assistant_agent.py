@@ -12,6 +12,8 @@ from autogen.oai.openai_utils import create_gpt_assistant, retrieve_assistants_b
 from autogen.runtime_logging import log_new_agent, logging_enabled
 import re
 
+import sys
+
 logger = logging.getLogger(__name__)
 
 
@@ -181,6 +183,11 @@ class GPTAssistantAgent(ConversableAgent):
             else:
                 # Tools are specified but overwrite_tools is False; do not update the assistant's tools
                 logger.warning("overwrite_tools is False. Using existing tools from assistant API.")
+
+        if self._openai_assistant == 0:
+            print('assistant not set-up, exiting')
+            # raise SystemExit(1)
+            sys.exit(0)
 
         self.update_system_message(self._openai_assistant.instructions)
         # lazily create threads
