@@ -816,8 +816,8 @@ def update_gpt_assistant(client: OpenAI, assistant_id: str, assistant_config: Di
         # Access the first argument of the exception, which should contain the error details
         error_details = e.args[0]
     
-        print(f"{error_details}")
-        return 0 
+        # print(f"{error_details}")
+        return error_details 
         # sys.exit(0) 
 
 def _satisfies(config_value: Any, acceptable_values: Any) -> bool:

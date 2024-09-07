@@ -1151,8 +1151,17 @@ class GroupChatManager(ConversableAgent):
             for a in groupchat.agents:
                 a.previous_cache = a.client_cache
                 a.client_cache = self.client_cache
+
+        # print('selecting speaker\n')
+        # print('speaker: ', speaker.name)
+        # print('messages: ', messages)
+        # print('len(messages): ', len(messages))
         for i in range(groupchat.max_round):
             self._last_speaker = speaker
+
+            # print('message: ', message)
+            # print('speaker: ', speaker.name)
+
             groupchat.append(message, speaker)
             # broadcast the message to all agents except the speaker
             for agent in groupchat.agents:
@@ -1162,8 +1171,18 @@ class GroupChatManager(ConversableAgent):
                 # The conversation is over or it's the last round
                 break
             try:
+                # print('step i: ', i)
+                # print('selecting speaker\n')
+                # print('speaker: ', speaker.name)
+                # print('messages: ', messages)
+                # print('len(messages): ', len(messages))
                 # select the next speaker
-                speaker = groupchat.select_speaker(speaker, self)
+                # print(groupchat.agents)
+                if i == 0:
+                    speaker = groupchat.agent_by_name("planner")
+                else:
+                    speaker = groupchat.select_speaker(speaker, self)
+                
                 if not silent:
                     iostream = IOStream.get_default()
                     iostream.print(colored(f"\nNext speaker: {speaker.name}\n", "green"), flush=True)

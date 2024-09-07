@@ -184,16 +184,19 @@ class GPTAssistantAgent(ConversableAgent):
                 # Tools are specified but overwrite_tools is False; do not update the assistant's tools
                 logger.warning("overwrite_tools is False. Using existing tools from assistant API.")
 
-        if self._openai_assistant == 0:
-            print('assistant not set-up, exiting')
+        if 'error' in self._openai_assistant:
+            print('assistant not set-up properly, relaying error message')
             # raise SystemExit(1)
-            sys.exit(0)
+            # sys.exit(0)
+            self._assistant_error = self._openai_assistant
 
-        self.update_system_message(self._openai_assistant.instructions)
-        # lazily create threads
-        self._openai_threads = {}
-        self._unread_index = defaultdict(int)
-        self.register_reply([Agent, None], GPTAssistantAgent._invoke_assistant, position=2)
+        else:
+            self.update_system_message(self._openai_assistant.instructions)
+            # lazily create threads
+            self._openai_threads = {}
+            self._unread_index = defaultdict(int)
+            self.register_reply([Agent, None], GPTAssistantAgent._invoke_assistant, position=2)
+            self._assistant_error = None
 
     def _invoke_assistant(
         self,
