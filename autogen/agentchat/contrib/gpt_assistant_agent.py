@@ -8,8 +8,11 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from autogen import OpenAIWrapper
 from autogen.agentchat.agent import Agent
 from autogen.agentchat.assistant_agent import AssistantAgent, ConversableAgent
-from autogen.oai.openai_utils import create_gpt_assistant, retrieve_assistants_by_name, update_gpt_assistant
+from autogen.oai.openai_utils import create_gpt_assistant, retrieve_assistants_by_name, update_gpt_assistant, OAI_PRICE1K
 from autogen.runtime_logging import log_new_agent, logging_enabled
+
+
+
 import re
 
 import sys
@@ -257,10 +260,17 @@ class GPTAssistantAgent(ConversableAgent):
         # print("\t\t gpt_assistant_agent.py in def _invoke_assistant: run done")
 
 
+        # print("gpt_assistant_agent.py in def _invoke_assistant: this run: ", run)
+
         run_response_messages = self._get_run_response(assistant_thread, run)
         # print("gpt_assistant_agent.py in def _invoke_assistant: run_response_messages: ", run_response_messages)
         # import sys
         # sys.exit(0)
+
+        # print("run usage: ", run.usage)
+        my_thread = self._openai_client.beta.threads.retrieve(assistant_thread.id)
+        # print("gpt_assistant_agent.py in def _invoke_assistant: this thread: ", my_thread)
+
         assert len(run_response_messages) > 0, "No response from the assistant."
 
         response = {
@@ -282,6 +292,42 @@ class GPTAssistantAgent(ConversableAgent):
         # Remove numerical references of format [0], [1], etc.
         cleaned_text = re.sub(r'\[\d+\]', '', text)
         return cleaned_text
+    
+    def cost(self, run):
+        """Calculate the cost of the run."""
+        model = run.model
+        if model not in OAI_PRICE1K:
+            # log warning that the model is not found
+            logger.warning(
+                f'Model {model} is not found. The cost will be 0. In your config_list, add field {{"price" : [prompt_price_per_1k, completion_token_price_per_1k]}} for customized pricing.'
+            )
+            return 0
+
+        n_input_tokens = run.usage.prompt_tokens if run.usage is not None else 0  # type: ignore [union-attr]
+        n_output_tokens = run.usage.completion_tokens if run.usage is not None else 0  # type: ignore [union-attr]
+        if n_output_tokens is None:
+            n_output_tokens = 0
+        tmp_price1K = OAI_PRICE1K[model]
+        # First value is input token rate, second value is output token rate
+        if isinstance(tmp_price1K, tuple):
+            return (tmp_price1K[0] * n_input_tokens + tmp_price1K[1] * n_output_tokens) / 1000  # type: ignore [no-any-return]
+        return tmp_price1K * (n_input_tokens + n_output_tokens) / 1000  # type: ignore [operator]
+
+
+    def print_usage_summary(self,tokens_dict):
+        # Extracting values from the dictionary
+        model = tokens_dict["model"]
+        prompt_tokens = tokens_dict["prompt_tokens"]
+        completion_tokens = tokens_dict["completion_tokens"]
+        total_tokens = tokens_dict["total_tokens"]
+        cost = tokens_dict["cost"]
+        
+        # Printing the formatted summary
+        print("-" * 100)
+        print("Usage summary:")
+        print(f"Total cost: {cost:.5f}")
+        print(f"* Model '{model}': cost: {cost:.5f}, prompt_tokens: {prompt_tokens}, completion_tokens: {completion_tokens}, total_tokens: {total_tokens}")
+        print("-" * 100)
 
     def _get_run_response(self, thread, run):
         """
@@ -297,6 +343,31 @@ class GPTAssistantAgent(ConversableAgent):
             run = self._wait_for_run(run.id, thread.id)
             if run.status == "completed":
                 response_messages = self._openai_client.beta.threads.messages.list(thread.id, order="asc")
+
+                # print("gpt_assistant_agent.py in def _get_run_response: response_messages: ", response_messages)
+                # print("gpt_assistant_agent.py in def _get_run_response: run.usage: ", run.usage)
+
+                prompt_tokens = run.usage.prompt_tokens
+                completion_tokens = run.usage.completion_tokens
+                total_tokens = run.usage.total_tokens
+
+                cost = self.cost(run)
+                # print('gpt_assistant_agent.py: cost: ', cost)
+
+                # Creating the dictionary
+                tokens_dict = {
+                    "model": run.model,
+                    "prompt_tokens": prompt_tokens,
+                    "completion_tokens": completion_tokens,
+                    "total_tokens": total_tokens,
+                    "cost": cost
+                }
+
+                # Print or return the dictionary
+                # print('gpt_assistant_agent token usage: ',tokens_dict)
+                self.print_usage_summary(tokens_dict)
+
+                # print("gpt_assistant_agent.py in def _get_run_response: thread: ", thread)
 
                 new_messages = []
                 for msg in response_messages:

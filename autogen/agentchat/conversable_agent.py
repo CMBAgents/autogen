@@ -1471,6 +1471,11 @@ class ConversableAgent(LLMAgent):
             context=messages[-1].pop("context", None), messages=all_messages, cache=cache, agent=self
         )
         # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: response: ", response)
+
+        llm_client.print_usage_summary(mode="actual")  # print actual usage summary, i.e., excluding cached usage
+        
+        # llm_client.print_usage_summary(mode="total")  # print total usage summary, i.e., including cached usage
+
         extracted_response = llm_client.extract_text_or_completion_object(response)[0]
 
         if extracted_response is None:
