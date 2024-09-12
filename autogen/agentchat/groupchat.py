@@ -376,7 +376,12 @@ class GroupChat:
 
         # Use the class attribute instead of a hardcoded string
         intro_msg = self.DEFAULT_INTRO_MSG
+
         participant_roles = self._participant_roles(agents)
+
+        print("****************")
+        print(f"{intro_msg}\n\n{participant_roles}")
+        print("****************")
 
         return f"{intro_msg}\n\n{participant_roles}"
 
