@@ -63,7 +63,6 @@ class GPTAssistantAgent(ConversableAgent):
                 - verbose (bool): If set to True, enables more detailed output from the assistant thread.
                 - Other kwargs: Except verbose, others are passed directly to ConversableAgent.
         """
-
         self._verbose = kwargs.pop("verbose", False)
         openai_client_cfg, openai_assistant_cfg = self._process_assistant_config(llm_config, assistant_config)
 
@@ -201,6 +200,9 @@ class GPTAssistantAgent(ConversableAgent):
             self.register_reply([Agent, None], GPTAssistantAgent._invoke_assistant, position=2)
             self._assistant_error = None
 
+        # set up dictionary attribute for cost summary
+        self.cost_dict = {'Agent': [], 'Cost': [], 'Prompt Tokens': [], 'Completion Tokens': [], 'Total Tokens': []}
+
     def _invoke_assistant(
         self,
         messages: Optional[List[Dict]] = None,
@@ -314,7 +316,7 @@ class GPTAssistantAgent(ConversableAgent):
         return tmp_price1K * (n_input_tokens + n_output_tokens) / 1000  # type: ignore [operator]
 
 
-    def print_usage_summary(self,tokens_dict):
+    def print_usage_summary(self, tokens_dict):
         # Extracting values from the dictionary
         model = tokens_dict["model"]
         prompt_tokens = tokens_dict["prompt_tokens"]
@@ -327,7 +329,17 @@ class GPTAssistantAgent(ConversableAgent):
         print("Usage summary:")
         print(f"Total cost: {cost:.5f}")
         print(f"* Model '{model}': cost: {cost:.5f}, prompt_tokens: {prompt_tokens}, completion_tokens: {completion_tokens}, total_tokens: {total_tokens}")
-        print("-" * 100)
+        print("-" * 100)  
+
+        # Update dictionary containing all costs
+        self.cost_dict['Agent'].append(self.name.replace('_agent', ''))
+        self.cost_dict['Cost'].append(cost) 
+        self.cost_dict['Prompt Tokens'].append(prompt_tokens)
+        self.cost_dict['Completion Tokens'].append(completion_tokens)
+        self.cost_dict['Total Tokens'].append(total_tokens)
+
+
+
 
     def _get_run_response(self, thread, run):
         """
