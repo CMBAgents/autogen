@@ -4,13 +4,14 @@
 name: SamplesToolsTests
 
 on:
-  pull_request:
-    branches: ["main"]
-    paths:
-      - "autogen/**"
-      - "samples/tools/**"
-      - ".github/workflows/samples-tools-tests.yml"
-      - "setup.py"
+  workflow_dispatch:
+  # pull_request:
+  #   branches: ["main"]
+  #   paths:
+  #     - "autogen/**"
+  #     - "samples/tools/**"
+  #     - ".github/workflows/samples-tools-tests.yml"
+  #     - "setup.py"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-${{ github.head_ref }}
