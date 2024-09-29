@@ -3,7 +3,7 @@ name: Upload Python Package to PyPi
 on:
   push:
     branches:
-      - main
+      - cmbagent
   workflow_dispatch:
   release:
     types: [published]
