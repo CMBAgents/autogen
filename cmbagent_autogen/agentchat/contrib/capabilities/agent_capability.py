@@ -1,4 +1,4 @@
-from autogen.agentchat.assistant_agent import ConversableAgent
+from cmbagent_autogen.agentchat.assistant_agent import ConversableAgent
 
 
 class AgentCapability:

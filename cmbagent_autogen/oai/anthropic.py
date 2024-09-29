@@ -57,7 +57,7 @@ from openai.types.chat.chat_completion import ChatCompletionMessage, Choice
 from openai.types.completion_usage import CompletionUsage
 from typing_extensions import Annotated
 
-from autogen.oai.client_utils import validate_parameter
+from cmbagent_autogen.oai.client_utils import validate_parameter
 
 TOOL_ENABLED = anthropic_version >= "0.23.1"
 if TOOL_ENABLED:

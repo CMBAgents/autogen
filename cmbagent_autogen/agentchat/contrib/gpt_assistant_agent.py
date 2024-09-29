@@ -5,11 +5,11 @@ import time
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from autogen import OpenAIWrapper
-from autogen.agentchat.agent import Agent
-from autogen.agentchat.assistant_agent import AssistantAgent, ConversableAgent
-from autogen.oai.openai_utils import create_gpt_assistant, retrieve_assistants_by_name, update_gpt_assistant, OAI_PRICE1K
-from autogen.runtime_logging import log_new_agent, logging_enabled
+from cmbagent_autogen import OpenAIWrapper
+from cmbagent_autogen.agentchat.agent import Agent
+from cmbagent_autogen.agentchat.assistant_agent import AssistantAgent, ConversableAgent
+from cmbagent_autogen.oai.openai_utils import create_gpt_assistant, retrieve_assistants_by_name, update_gpt_assistant, OAI_PRICE1K
+from cmbagent_autogen.runtime_logging import log_new_agent, logging_enabled
 
 
 

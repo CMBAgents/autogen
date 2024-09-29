@@ -4,11 +4,11 @@ from typing import Any, Dict, List, Literal, Optional, Protocol, Tuple, Union
 from openai import OpenAI
 from PIL.Image import Image
 
-from autogen import Agent, ConversableAgent, code_utils
-from autogen.agentchat.contrib import img_utils
-from autogen.agentchat.contrib.capabilities.agent_capability import AgentCapability
-from autogen.agentchat.contrib.text_analyzer_agent import TextAnalyzerAgent
-from autogen.cache import AbstractCache
+from cmbagent_autogen import Agent, ConversableAgent, code_utils
+from cmbagent_autogen.agentchat.contrib import img_utils
+from cmbagent_autogen.agentchat.contrib.capabilities.agent_capability import AgentCapability
+from cmbagent_autogen.agentchat.contrib.text_analyzer_agent import TextAnalyzerAgent
+from cmbagent_autogen.cache import AbstractCache
 
 SYSTEM_MESSAGE = "You've been given the special ability to generate images."
 DESCRIPTION_MESSAGE = "This agent has the ability to generate images."

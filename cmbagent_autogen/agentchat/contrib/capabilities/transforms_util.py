@@ -1,9 +1,9 @@
 from typing import Any, Dict, Hashable, List, Optional, Tuple
 
-from autogen import token_count_utils
-from autogen.cache.abstract_cache_base import AbstractCache
-from autogen.oai.openai_utils import filter_config
-from autogen.types import MessageContentType
+from cmbagent_autogen import token_count_utils
+from cmbagent_autogen.cache.abstract_cache_base import AbstractCache
+from cmbagent_autogen.oai.openai_utils import filter_config
+from cmbagent_autogen.types import MessageContentType
 
 
 def cache_key(content: MessageContentType, *args: Hashable) -> str:

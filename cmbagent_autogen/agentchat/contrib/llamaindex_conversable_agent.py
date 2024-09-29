@@ -1,8 +1,8 @@
 from typing import Dict, List, Optional, Tuple, Union
 
-from autogen import OpenAIWrapper
-from autogen.agentchat import Agent, ConversableAgent
-from autogen.agentchat.contrib.vectordb.utils import get_logger
+from cmbagent_autogen import OpenAIWrapper
+from cmbagent_autogen.agentchat import Agent, ConversableAgent
+from cmbagent_autogen.agentchat.contrib.vectordb.utils import get_logger
 
 logger = get_logger(__name__)
 

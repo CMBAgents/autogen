@@ -1,8 +1,8 @@
 import warnings
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-from autogen.agentchat.agent import Agent
-from autogen.agentchat.assistant_agent import AssistantAgent
+from cmbagent_autogen.agentchat.agent import Agent
+from cmbagent_autogen.agentchat.assistant_agent import AssistantAgent
 
 
 class RetrieveAssistantAgent(AssistantAgent):

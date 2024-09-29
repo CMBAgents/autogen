@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
-from autogen.agentchat.agent import Agent
-from autogen.agentchat.assistant_agent import ConversableAgent
+from cmbagent_autogen.agentchat.agent import Agent
+from cmbagent_autogen.agentchat.assistant_agent import ConversableAgent
 
 system_message = """You are an expert in text analysis.
 The user will give you TEXT to analyze.

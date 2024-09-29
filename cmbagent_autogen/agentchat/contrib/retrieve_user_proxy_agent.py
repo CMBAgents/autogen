@@ -10,23 +10,23 @@ try:
     import chromadb
 except ImportError as e:
     raise ImportError(f"{e}. You can try `pip install pyautogen[retrievechat]`, or install `chromadb` manually.")
-from autogen.agentchat import UserProxyAgent
-from autogen.agentchat.agent import Agent
-from autogen.agentchat.contrib.vectordb.base import Document, QueryResults, VectorDB, VectorDBFactory
-from autogen.agentchat.contrib.vectordb.utils import (
+from cmbagent_autogen.agentchat import UserProxyAgent
+from cmbagent_autogen.agentchat.agent import Agent
+from cmbagent_autogen.agentchat.contrib.vectordb.base import Document, QueryResults, VectorDB, VectorDBFactory
+from cmbagent_autogen.agentchat.contrib.vectordb.utils import (
     chroma_results_to_query_results,
     filter_results_by_distance,
     get_logger,
 )
-from autogen.code_utils import extract_code
-from autogen.retrieve_utils import (
+from cmbagent_autogen.code_utils import extract_code
+from cmbagent_autogen.retrieve_utils import (
     TEXT_FORMATS,
     create_vector_db_from_dir,
     get_files_from_dir,
     query_vector_db,
     split_files_to_chunks,
 )
-from autogen.token_count_utils import count_token
+from cmbagent_autogen.token_count_utils import count_token
 
 from ...formatting_utils import colored
 

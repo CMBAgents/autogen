@@ -9,12 +9,12 @@ from typing import Any, Callable, Dict, List, Optional, Protocol, Tuple, Union
 from flaml.automl.logger import logger_formatter
 from pydantic import BaseModel
 
-from autogen.cache import Cache
-from autogen.io.base import IOStream
-from autogen.logger.logger_utils import get_current_ts
-from autogen.oai.openai_utils import OAI_PRICE1K, get_key, is_valid_api_key
-from autogen.runtime_logging import log_chat_completion, log_new_client, log_new_wrapper, logging_enabled
-from autogen.token_count_utils import count_token
+from cmbagent_autogen.cache import Cache
+from cmbagent_autogen.io.base import IOStream
+from cmbagent_autogen.logger.logger_utils import get_current_ts
+from cmbagent_autogen.oai.openai_utils import OAI_PRICE1K, get_key, is_valid_api_key
+from cmbagent_autogen.runtime_logging import log_chat_completion, log_new_client, log_new_wrapper, logging_enabled
+from cmbagent_autogen.token_count_utils import count_token
 
 TOOL_ENABLED = False
 try:
@@ -43,49 +43,49 @@ else:
     ERROR = None
 
 try:
-    from autogen.oai.gemini import GeminiClient
+    from cmbagent_autogen.oai.gemini import GeminiClient
 
     gemini_import_exception: Optional[ImportError] = None
 except ImportError as e:
     gemini_import_exception = e
 
 try:
-    from autogen.oai.anthropic import AnthropicClient
+    from cmbagent_autogen.oai.anthropic import AnthropicClient
 
     anthropic_import_exception: Optional[ImportError] = None
 except ImportError as e:
     anthropic_import_exception = e
 
 try:
-    from autogen.oai.mistral import MistralAIClient
+    from cmbagent_autogen.oai.mistral import MistralAIClient
 
     mistral_import_exception: Optional[ImportError] = None
 except ImportError as e:
     mistral_import_exception = e
 
 try:
-    from autogen.oai.together import TogetherClient
+    from cmbagent_autogen.oai.together import TogetherClient
 
     together_import_exception: Optional[ImportError] = None
 except ImportError as e:
     together_import_exception = e
 
 try:
-    from autogen.oai.groq import GroqClient
+    from cmbagent_autogen.oai.groq import GroqClient
 
     groq_import_exception: Optional[ImportError] = None
 except ImportError as e:
     groq_import_exception = e
 
 try:
-    from autogen.oai.cohere import CohereClient
+    from cmbagent_autogen.oai.cohere import CohereClient
 
     cohere_import_exception: Optional[ImportError] = None
 except ImportError as e:
     cohere_import_exception = e
 
 try:
-    from autogen.oai.bedrock import BedrockClient
+    from cmbagent_autogen.oai.bedrock import BedrockClient
 
     bedrock_import_exception: Optional[ImportError] = None
 except ImportError as e:

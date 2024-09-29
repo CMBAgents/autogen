@@ -36,7 +36,7 @@ from openai.types.completion_usage import CompletionUsage
 from PIL import Image
 from together import Together, error
 
-from autogen.oai.client_utils import should_hide_tools, validate_parameter
+from cmbagent_autogen.oai.client_utils import should_hide_tools, validate_parameter
 
 
 class TogetherClient:

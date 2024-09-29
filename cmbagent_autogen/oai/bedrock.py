@@ -39,7 +39,7 @@ from openai.types.chat import ChatCompletion, ChatCompletionMessageToolCall
 from openai.types.chat.chat_completion import ChatCompletionMessage, Choice
 from openai.types.completion_usage import CompletionUsage
 
-from autogen.oai.client_utils import validate_parameter
+from cmbagent_autogen.oai.client_utils import validate_parameter
 
 
 class BedrockClient:

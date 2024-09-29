@@ -5,10 +5,10 @@ from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 from pydantic import BaseModel, Extra, root_validator
 
-from autogen._pydantic import PYDANTIC_V1
-from autogen.agentchat import Agent, UserProxyAgent
-from autogen.code_utils import UNKNOWN, execute_code, extract_code, infer_lang
-from autogen.math_utils import get_answer
+from cmbagent_autogen._pydantic import PYDANTIC_V1
+from cmbagent_autogen.agentchat import Agent, UserProxyAgent
+from cmbagent_autogen.code_utils import UNKNOWN, execute_code, extract_code, infer_lang
+from cmbagent_autogen.math_utils import get_answer
 
 PROMPTS = {
     # default

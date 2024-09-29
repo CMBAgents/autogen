@@ -5,10 +5,10 @@ from typing import List, Optional, Tuple
 import replicate
 import requests
 
-from autogen.agentchat.agent import Agent
-from autogen.agentchat.contrib.img_utils import get_image_data, llava_formatter
-from autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
-from autogen.code_utils import content_str
+from cmbagent_autogen.agentchat.agent import Agent
+from cmbagent_autogen.agentchat.contrib.img_utils import get_image_data, llava_formatter
+from cmbagent_autogen.agentchat.contrib.multimodal_conversable_agent import MultimodalConversableAgent
+from cmbagent_autogen.code_utils import content_str
 
 from ...formatting_utils import colored
 

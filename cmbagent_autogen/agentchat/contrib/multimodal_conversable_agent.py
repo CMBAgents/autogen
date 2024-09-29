@@ -1,13 +1,13 @@
 import copy
 from typing import Dict, List, Optional, Tuple, Union
 
-from autogen import OpenAIWrapper
-from autogen.agentchat import Agent, ConversableAgent
-from autogen.agentchat.contrib.img_utils import (
+from cmbagent_autogen import OpenAIWrapper
+from cmbagent_autogen.agentchat import Agent, ConversableAgent
+from cmbagent_autogen.agentchat.contrib.img_utils import (
     gpt4v_formatter,
     message_formatter_pil_to_b64,
 )
-from autogen.code_utils import content_str
+from cmbagent_autogen.code_utils import content_str
 
 from ..._pydantic import model_dump
 

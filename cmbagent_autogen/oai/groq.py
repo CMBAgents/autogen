@@ -30,7 +30,7 @@ from openai.types.chat import ChatCompletion, ChatCompletionMessageToolCall
 from openai.types.chat.chat_completion import ChatCompletionMessage, Choice
 from openai.types.completion_usage import CompletionUsage
 
-from autogen.oai.client_utils import should_hide_tools, validate_parameter
+from cmbagent_autogen.oai.client_utils import should_hide_tools, validate_parameter
 
 # Cost per thousand tokens - Input / Output (NOTE: Convert $/Million to $/K)
 GROQ_PRICING_1K = {

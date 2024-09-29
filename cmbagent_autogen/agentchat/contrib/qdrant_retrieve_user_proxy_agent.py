@@ -1,13 +1,13 @@
 import warnings
 from typing import Callable, Dict, List, Literal, Optional
 
-from autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
-from autogen.agentchat.contrib.vectordb.utils import (
+from cmbagent_autogen.agentchat.contrib.retrieve_user_proxy_agent import RetrieveUserProxyAgent
+from cmbagent_autogen.agentchat.contrib.vectordb.utils import (
     chroma_results_to_query_results,
     filter_results_by_distance,
     get_logger,
 )
-from autogen.retrieve_utils import TEXT_FORMATS, get_files_from_dir, split_files_to_chunks
+from cmbagent_autogen.retrieve_utils import TEXT_FORMATS, get_files_from_dir, split_files_to_chunks
 
 logger = get_logger(__name__)
 

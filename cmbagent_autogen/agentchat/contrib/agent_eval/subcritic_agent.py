@@ -1,6 +1,6 @@
 from typing import Optional
 
-from autogen.agentchat.conversable_agent import ConversableAgent
+from cmbagent_autogen.agentchat.conversable_agent import ConversableAgent
 
 
 class SubCriticAgent(ConversableAgent):

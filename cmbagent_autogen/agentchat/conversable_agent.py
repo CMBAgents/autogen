@@ -11,8 +11,8 @@ from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Type, Ty
 
 from openai import BadRequestError
 
-from autogen.agentchat.chat import _post_process_carryover_item
-from autogen.exception_utils import InvalidCarryOverType, SenderRequired
+from cmbagent_autogen.agentchat.chat import _post_process_carryover_item
+from cmbagent_autogen.exception_utils import InvalidCarryOverType, SenderRequired
 
 from .._pydantic import model_dump
 from ..cache.cache import AbstractCache

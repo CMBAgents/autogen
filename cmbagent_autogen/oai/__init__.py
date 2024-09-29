@@ -1,7 +1,7 @@
-from autogen.cache.cache import Cache
-from autogen.oai.client import ModelClient, OpenAIWrapper
-from autogen.oai.completion import ChatCompletion, Completion
-from autogen.oai.openai_utils import (
+from cmbagent_autogen.cache.cache import Cache
+from cmbagent_autogen.oai.client import ModelClient, OpenAIWrapper
+from cmbagent_autogen.oai.completion import ChatCompletion, Completion
+from cmbagent_autogen.oai.openai_utils import (
     config_list_from_dotenv,
     config_list_from_json,
     config_list_from_models,

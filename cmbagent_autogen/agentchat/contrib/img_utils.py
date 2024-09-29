@@ -8,7 +8,7 @@ from typing import Dict, List, Tuple, Union
 import requests
 from PIL import Image
 
-from autogen.agentchat import utils
+from cmbagent_autogen.agentchat import utils
 
 
 def get_pil_image(image_file: Union[str, Image.Image]) -> Image.Image:

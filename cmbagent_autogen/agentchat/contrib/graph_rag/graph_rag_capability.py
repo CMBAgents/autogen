@@ -1,5 +1,5 @@
-from autogen.agentchat.contrib.capabilities.agent_capability import AgentCapability
-from autogen.agentchat.conversable_agent import ConversableAgent
+from cmbagent_autogen.agentchat.contrib.capabilities.agent_capability import AgentCapability
+from cmbagent_autogen.agentchat.conversable_agent import ConversableAgent
 
 from .graph_query_engine import GraphQueryEngine
 
