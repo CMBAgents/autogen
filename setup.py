@@ -10,7 +10,7 @@ with open("README.md", "r", encoding="UTF-8") as fh:
 
 # Get the code version
 version = {}
-with open(os.path.join(here, "autogen/version.py")) as fp:
+with open(os.path.join(here, "cmbagent_autogen/version.py")) as fp:
     exec(fp.read(), version)
 __version__ = version["__version__"]
 
@@ -95,15 +95,15 @@ extra_require = {
 }
 
 setuptools.setup(
-    name="pyautogen",
+    name="cmbagent_autogen",
     version=__version__,
-    author="AutoGen",
+    author="Autogen modified by CMBAgents",
     author_email="autogen-contact@service.microsoft.com",
-    description="Enabling Next-Gen LLM Applications via Multi-Agent Conversation Framework",
+    description="Enabling Next-Gen LLM Applications via Multi-Agent Conversation Framework -- by cosmologists",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/microsoft/autogen",
-    packages=setuptools.find_packages(include=["autogen*"], exclude=["test"]),
+    url="https://github.com/CMBAgents/autogen",
+    packages=setuptools.find_packages(include=["cmbagent_autogen*"], exclude=["test"]),
     install_requires=install_requires,
     extras_require=extra_require,
     classifiers=[

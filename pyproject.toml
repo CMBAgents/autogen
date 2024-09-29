@@ -53,23 +53,23 @@ max-complexity = 10
 
 [tool.mypy]
 files = [
-    "autogen/logger",
-    "autogen/exception_utils.py",
-    "autogen/coding",
-    "autogen/oai/openai_utils.py",
-    "autogen/_pydantic.py",
-    "autogen/function_utils.py",
-    "autogen/io",
+    "cmbagent_autogen/logger",
+    "cmbagent_autogen/exception_utils.py",
+    "cmbagent_autogen/coding",
+    "cmbagent_autogen/oai/openai_utils.py",
+    "cmbagent_autogen/_pydantic.py",
+    "cmbagent_autogen/function_utils.py",
+    "cmbagent_autogen/io",
     "test/test_pydantic.py",
     "test/test_function_utils.py",
     "test/io",
 ]
 exclude = [
-    "autogen/math_utils\\.py",
-    "autogen/oai/completion\\.py",
-    "autogen/agentchat/contrib/compressible_agent\\.py",
-    "autogen/agentchat/contrib/math_user_proxy_agent.py",
-    "autogen/oai/openai_utils.py",
+    "cmbagent_autogen/math_utils\\.py",
+    "cmbagent_autogen/oai/completion\\.py",
+    "cmbagent_autogen/agentchat/contrib/compressible_agent\\.py",
+    "cmbagent_autogen/agentchat/contrib/math_user_proxy_agent.py",
+    "cmbagent_autogen/oai/openai_utils.py",
 ]
 
 strict = true
