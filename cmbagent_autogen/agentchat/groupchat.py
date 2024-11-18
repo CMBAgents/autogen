@@ -275,6 +275,8 @@ class GroupChat:
         # Validate select_speaker_auto_verbose
         if self.select_speaker_auto_verbose is None or not isinstance(self.select_speaker_auto_verbose, bool):
             raise ValueError("select_speaker_auto_verbose cannot be None or non-bool")
+        
+        self.new_conversable_agents = [] # conversable agents that are part of admin and added here
 
     @property
     def agent_names(self) -> List[str]:
@@ -655,6 +657,7 @@ class GroupChat:
         # print("groupchat.py setting up checking_agent")
         # Agent for checking the response from the speaker_select_agent
         checking_agent = ConversableAgent("checking_agent", default_auto_reply=max_attempts)
+        self.new_conversable_agents.append(checking_agent)
 
         # Register the speaker validation function with the checking agent
         checking_agent.register_reply(
@@ -679,6 +682,7 @@ class GroupChat:
             llm_config=selector.llm_config,
             human_input_mode="NEVER",  # Suppresses some extra terminal outputs, outputs will be handled by select_speaker_auto_verbose
         )
+        self.new_conversable_agents.append(speaker_selection_agent)
         # print("\n")
         # print("\tgroupchat.py speaker_selection_agent setup done with chat_messages: ", speaker_selection_agent.chat_messages)
         # print("\n")
@@ -780,6 +784,7 @@ class GroupChat:
 
         # Agent for checking the response from the speaker_select_agent
         checking_agent = ConversableAgent("checking_agent", default_auto_reply=max_attempts)
+        self.new_conversable_agents.append(checking_agent)
 
         # Register the speaker validation function with the checking agent
         checking_agent.register_reply(
@@ -798,6 +803,7 @@ class GroupChat:
             llm_config=selector.llm_config,
             human_input_mode="NEVER",  # Suppresses some extra terminal outputs, outputs will be handled by select_speaker_auto_verbose
         )
+        self.new_conversable_agents.append(speaker_selection_agent)
 
         # Create the starting message
         if self.select_speaker_prompt_template is not None:

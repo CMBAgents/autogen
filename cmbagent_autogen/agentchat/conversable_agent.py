@@ -257,6 +257,9 @@ class ConversableAgent(LLMAgent):
             "process_message_before_send": [],
         }
 
+        # set up dictionary attribute for cost summary
+        self.cost_dict = {'Agent': [], 'Cost': [], 'Prompt Tokens': [], 'Completion Tokens': [], 'Total Tokens': []}
+
     def _validate_llm_config(self, llm_config):
         assert llm_config in (None, False) or isinstance(
             llm_config, dict
@@ -1471,8 +1474,22 @@ class ConversableAgent(LLMAgent):
             context=messages[-1].pop("context", None), messages=all_messages, cache=cache, agent=self
         )
         # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: response: ", response)
-
+        
         llm_client.print_usage_summary(mode="actual")  # print actual usage summary, i.e., excluding cached usage
+
+        # Update dictionary containing all costs
+        usage_summary = llm_client.return_usage_summary(mode="actual")
+        if usage_summary is not None:
+            cost, prompt_tokens, completion_tokens, total_tokens = usage_summary
+            if self.name in ['planner', 'engineer']:
+                name = self.name
+            else:
+                name = 'admin (' + self.name + ')'
+            self.cost_dict['Agent'].append(name)
+            self.cost_dict['Cost'].append(cost) 
+            self.cost_dict['Prompt Tokens'].append(prompt_tokens)
+            self.cost_dict['Completion Tokens'].append(completion_tokens)
+            self.cost_dict['Total Tokens'].append(total_tokens)
         
         # llm_client.print_usage_summary(mode="total")  # print total usage summary, i.e., including cached usage
 

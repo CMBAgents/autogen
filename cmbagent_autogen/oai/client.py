@@ -1021,6 +1021,28 @@ class OpenAIWrapper:
         else:
             raise ValueError(f'Invalid mode: {mode}, choose from "actual", "total", ["actual", "total"]')
         iostream.print("-" * 100, flush=True)
+    
+
+    def return_usage_summary(self, mode: str = "actual") -> None:
+        """Return the usage summary items."""
+        if mode == 'actual':
+            usage_summary = self.actual_usage_summary
+        elif mode == 'total':
+            usage_summary = self.total_usage_summary
+        else:
+            raise ValueError(f'Invalid mode: {mode}, choose from "actual" or "total"')
+        if usage_summary is None:
+            return None
+        total_cost = usage_summary['total_cost']
+        prompt_tokens, completion_tokens, total_tokens = 0, 0, 0
+        for model, counts in usage_summary.items():
+            if model == "total_cost":
+                continue
+            prompt_tokens += counts['prompt_tokens']
+            completion_tokens += counts['completion_tokens']
+            total_tokens += counts['total_tokens']
+        return total_cost, prompt_tokens, completion_tokens, total_tokens
+
 
     def clear_usage_summary(self) -> None:
         """Clear the usage summary."""
