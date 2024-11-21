@@ -24,6 +24,7 @@ NON_CACHE_KEY = [
     "azure_ad_token",
     "azure_ad_token_provider",
     "credentials",
+    "response_format",
 ]
 DEFAULT_AZURE_API_VERSION = "2024-02-01"
 OAI_PRICE1K = {
@@ -91,6 +92,7 @@ def get_key(config: Dict[str, Any]) -> str:
     """
     copied = False
     for key in NON_CACHE_KEY:
+
         if key in config:
             config, copied = config.copy() if not copied else config, True
             config.pop(key)
@@ -790,6 +792,11 @@ def update_gpt_assistant(client: OpenAI, assistant_id: str, assistant_config: Di
 
     if assistant_config.get("top_p") is not None:
         assistant_update_kwargs["top_p"] = assistant_config["top_p"]
+
+
+    if assistant_config.get("response_format") is not None:
+        print("in openai_utils.py update_gpt_assistant: response_format: ", assistant_config["response_format"])
+        assistant_update_kwargs["response_format"] = assistant_config["response_format"]
 
     if assistant_config.get("instructions") is not None:
         assistant_update_kwargs["instructions"] = assistant_config["instructions"]

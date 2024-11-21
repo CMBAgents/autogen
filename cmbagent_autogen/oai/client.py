@@ -16,6 +16,19 @@ from cmbagent_autogen.oai.openai_utils import OAI_PRICE1K, get_key, is_valid_api
 from cmbagent_autogen.runtime_logging import log_chat_completion, log_new_client, log_new_wrapper, logging_enabled
 from cmbagent_autogen.token_count_utils import count_token
 
+
+
+
+class SummarySubTask(BaseModel):
+    result: str
+    feedback: str
+    agent: str
+
+class CMBAGENTSummary(BaseModel):
+    main_task: str
+    results: str
+    summary: List[SummarySubTask]
+
 TOOL_ENABLED = False
 try:
     import openai
@@ -207,7 +220,7 @@ class OpenAIClient:
         """
         iostream = IOStream.get_default()
 
-        # print("\n\nOpenAI client.py in def create: params: ", params)
+        print("\n\n\n\nOpenAI client.py in def create L210: params: ", params)
 
         completions: Completions = self._oai_client.chat.completions if "messages" in params else self._oai_client.completions  # type: ignore [attr-defined]
         # If streaming is enabled and has messages, then iterate over the chunks of the response.
@@ -326,6 +339,21 @@ class OpenAIClient:
             # If streaming is not enabled, send a regular chat completion request
             params = params.copy()
             params["stream"] = False
+            print("in client.py create: params: ", params)
+            if "response_format" in params and isinstance(params["response_format"], type):
+                print("\n\n\nin client.py create: response_format: ", params["response_format"])
+                # if isinstance(params["response_format"], type):
+                #     response = completions.e(**params)
+                #     return response
+                params.pop("stream")
+                params["response_format"] = CMBAGENTSummary
+                response = self._oai_client.beta.chat.completions.parse(**params)
+                print("\n\n\nin client.py create: response: ", response)
+                import sys
+                sys.exit()
+                return response
+
+            
             response = completions.create(**params)
 
         return response
@@ -678,6 +706,7 @@ class OpenAIWrapper:
                 create_config["model"] = create_config["model"].replace(".", "")
             # construct the create params
             params = self._construct_create_params(create_config, extra_kwargs)
+            print("in client.py create: params: ", params)
             # get the cache_seed, filter_func and context
             cache_seed = extra_kwargs.get("cache_seed", LEGACY_DEFAULT_CACHE_SEED)
             cache = extra_kwargs.get("cache")
@@ -748,6 +777,12 @@ class OpenAIWrapper:
                         continue  # filter is not passed; try the next config
             try:
                 request_ts = get_current_ts()
+                if "response_format" in params and isinstance(params["response_format"], type):
+                    print("in client.py create: response_format: ", params["response_format"])
+                #     response = client.parse(params)
+                #     # return response
+                # else:
+                #     response = client.create(params)
                 response = client.create(params)
             except APITimeoutError as err:
                 logger.debug(f"config {i} timed out", exc_info=True)

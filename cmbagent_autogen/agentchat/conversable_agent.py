@@ -36,6 +36,7 @@ from ..runtime_logging import log_event, log_function_use, log_new_agent, loggin
 from .agent import Agent, LLMAgent
 from .chat import ChatResult, a_initiate_chats, initiate_chats
 from .utils import consolidate_chat_info, gather_usage_summary
+from pydantic import BaseModel
 
 __all__ = ("ConversableAgent",)
 
@@ -172,6 +173,9 @@ class ConversableAgent(LLMAgent):
 
         # Initialize standalone client cache object.
         self.client_cache = None
+
+        # response_format is used to specify the response format for the agent
+        self.response_format = None
 
         self.human_input_mode = human_input_mode
         self._max_consecutive_auto_reply = (
@@ -1102,10 +1106,23 @@ class ConversableAgent(LLMAgent):
         _chat_info = locals().copy()
         _chat_info["sender"] = self
         consolidate_chat_info(_chat_info, uniform_sender=self)
+
+        print("in conversable_agent.py initiate_chat: ", message)
+        if 'response_format' in kwargs:
+            print("response_format: ", kwargs['response_format'])
+            self.response_format = kwargs['response_format']
+        else:
+            print("no response_format, setting to None")
+            self.response_format = None
+        # import sys
+        # sys.exit()
+
         for agent in [self, recipient]:
             agent._raise_exception_on_async_reply_functions()
             agent.previous_cache = agent.client_cache
             agent.client_cache = cache
+            agent.response_format = self.response_format
+
         if isinstance(max_turns, int):
             self._prepare_chat(recipient, clear_history, reply_at_receive=False)
             for _ in range(max_turns):
@@ -1440,6 +1457,7 @@ class ConversableAgent(LLMAgent):
         messages: Optional[List[Dict]] = None,
         sender: Optional[Agent] = None,
         config: Optional[OpenAIWrapper] = None,
+        response_format: Optional[BaseModel] = None,
     ) -> Tuple[bool, Union[str, Dict, None]]:
         """Generate a reply using autogen.oai."""
         client = self.client if config is None else config
@@ -1449,11 +1467,11 @@ class ConversableAgent(LLMAgent):
             messages = self._oai_messages[sender]
         # print("\n\nconversable_agent.py in def generate_oai_reply: messages: ", messages)
         extracted_response = self._generate_oai_reply_from_client(
-            client, self._oai_system_message + messages, self.client_cache
+            client, self._oai_system_message + messages, self.client_cache, self.response_format
         )
         return (False, None) if extracted_response is None else (True, extracted_response)
 
-    def _generate_oai_reply_from_client(self, llm_client, messages, cache) -> Union[str, Dict, None]:
+    def _generate_oai_reply_from_client(self, llm_client, messages, cache, response_format=None) -> Union[str, Dict, None]:
         # unroll tool_responses
         # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: messages: ", messages)
         all_messages = []
@@ -1470,10 +1488,11 @@ class ConversableAgent(LLMAgent):
         # TODO: #1143 handle token limit exceeded error
         # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: all_messages: ", all_messages)
         # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client using context: ", messages[-1].pop("context", None))
+        print("\n\n creating thread")
         response = llm_client.create(
-            context=messages[-1].pop("context", None), messages=all_messages, cache=cache, agent=self
+            context=messages[-1].pop("context", None), messages=all_messages, cache=cache, agent=self, response_format=response_format
         )
-        # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: response: ", response)
+        print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: response: ", response)
         
         llm_client.print_usage_summary(mode="actual")  # print actual usage summary, i.e., excluding cached usage
 
