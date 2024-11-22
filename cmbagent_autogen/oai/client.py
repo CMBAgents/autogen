@@ -20,6 +20,7 @@ from cmbagent_autogen.token_count_utils import count_token
 
 
 class SummarySubTask(BaseModel):
+    sub_task: str
     result: str
     feedback: str
     agent: str
@@ -220,7 +221,7 @@ class OpenAIClient:
         """
         iostream = IOStream.get_default()
 
-        print("\n\n\n\nOpenAI client.py in def create L210: params: ", params)
+        # print("\n\n\n\nOpenAI client.py in def create L210: params: ", params)
 
         completions: Completions = self._oai_client.chat.completions if "messages" in params else self._oai_client.completions  # type: ignore [attr-defined]
         # If streaming is enabled and has messages, then iterate over the chunks of the response.
@@ -339,18 +340,18 @@ class OpenAIClient:
             # If streaming is not enabled, send a regular chat completion request
             params = params.copy()
             params["stream"] = False
-            print("in client.py create: params: ", params)
+            # print("in client.py create: params: ", params)
             if "response_format" in params and isinstance(params["response_format"], type):
-                print("\n\n\nin client.py create: response_format: ", params["response_format"])
+                # print("\n\n\nin client.py create: response_format: ", params["response_format"])
                 # if isinstance(params["response_format"], type):
                 #     response = completions.e(**params)
                 #     return response
                 params.pop("stream")
                 params["response_format"] = CMBAGENTSummary
                 response = self._oai_client.beta.chat.completions.parse(**params)
-                print("\n\n\nin client.py create: response: ", response)
-                import sys
-                sys.exit()
+                # print("\n\n\nin client.py create: response: ", response)
+                # import sys
+                # sys.exit()
                 return response
 
             
@@ -706,7 +707,7 @@ class OpenAIWrapper:
                 create_config["model"] = create_config["model"].replace(".", "")
             # construct the create params
             params = self._construct_create_params(create_config, extra_kwargs)
-            print("in client.py create: params: ", params)
+            # print("in client.py create: params: ", params)
             # get the cache_seed, filter_func and context
             cache_seed = extra_kwargs.get("cache_seed", LEGACY_DEFAULT_CACHE_SEED)
             cache = extra_kwargs.get("cache")
@@ -736,6 +737,7 @@ class OpenAIWrapper:
             if cache_client is not None:
                 with cache_client as cache:
                     # Try to get the response from cache
+                    # print("in client.py create: cache: ", cache)
                     key = get_key(params)
                     request_ts = get_current_ts()
 
@@ -748,6 +750,8 @@ class OpenAIWrapper:
                         except AttributeError:
                             # update attribute if cost is not calculated
                             response.cost = client.cost(response)
+                            # print("in client.py create: response.cost: ", response.cost)
+                            # print("key: ", key)
                             cache.set(key, response)
                         total_usage = client.get_usage(response)
 
@@ -777,8 +781,8 @@ class OpenAIWrapper:
                         continue  # filter is not passed; try the next config
             try:
                 request_ts = get_current_ts()
-                if "response_format" in params and isinstance(params["response_format"], type):
-                    print("in client.py create: response_format: ", params["response_format"])
+                # if "response_format" in params and isinstance(params["response_format"], type):
+                    # print("in client.py create: response_format: ", params["response_format"])
                 #     response = client.parse(params)
                 #     # return response
                 # else:
@@ -815,14 +819,30 @@ class OpenAIWrapper:
                 # add cost calculation before caching no matter filter is passed or not
                 if price is not None:
                     response.cost = self._cost_with_customized_price(response, price)
+                    # print("in client.py _cost_with_customized_price create: response.cost: ", response.cost)
                 else:
                     response.cost = client.cost(response)
+                    # print("in client.py client.cost create: response.cost: ", response.cost)
                 actual_usage = client.get_usage(response)
                 total_usage = actual_usage.copy() if actual_usage is not None else total_usage
                 self._update_usage(actual_usage=actual_usage, total_usage=total_usage)
-                if cache_client is not None:
-                    # Cache the response
+                if cache_client is not None and not hasattr(response.choices[0].message, "parsed"):
+                    # print("in client.py create: cache_client: ", cache_client)
+                    # # Cache the response
+                    # # if response.choices[0].message.parsed is not None:
+                    # # Test if 'parsed' is an attribute
+                    # if hasattr(response.choices[0].message, "parsed"):
+                    #     print("in client.py create: response.choices The 'parsed' attribute exists.")
+                    #     # Access and use the attribute
+                    #     parsed = response.choices[0].message.parsed
+                    #     print("in client.py create: response.choicesparsed: ", parsed)
+                    #     print(parsed.main_task)
+
+                        # print("in client.py create: response.choices[0].message.parsed: ", response.choices[0].message.parsed)
+                        # import sys
+                        # sys.exit()
                     with cache_client as cache:
+                        # print("in client.py create: cache.set key: ", key)
                         cache.set(key, response)
 
                 if logging_enabled():

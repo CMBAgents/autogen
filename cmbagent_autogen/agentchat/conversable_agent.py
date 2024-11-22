@@ -1107,12 +1107,12 @@ class ConversableAgent(LLMAgent):
         _chat_info["sender"] = self
         consolidate_chat_info(_chat_info, uniform_sender=self)
 
-        print("in conversable_agent.py initiate_chat: ", message)
+        # print("in conversable_agent.py initiate_chat: ", message)
         if 'response_format' in kwargs:
-            print("response_format: ", kwargs['response_format'])
+            # print("response_format: ", kwargs['response_format'])
             self.response_format = kwargs['response_format']
         else:
-            print("no response_format, setting to None")
+            # print("no response_format, setting to None")
             self.response_format = None
         # import sys
         # sys.exit()
@@ -1142,6 +1142,7 @@ class ConversableAgent(LLMAgent):
                 msg2send = message(_chat_info["sender"], _chat_info["recipient"], kwargs)
             else:
                 msg2send = self.generate_init_message(message, **kwargs)
+            # print("in conversable_agent.py initiate_chat: msg2send: ", msg2send)
             self.send(msg2send, recipient, silent=silent)
         summary = self._summarize_chat(
             summary_method,
@@ -1488,11 +1489,11 @@ class ConversableAgent(LLMAgent):
         # TODO: #1143 handle token limit exceeded error
         # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: all_messages: ", all_messages)
         # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client using context: ", messages[-1].pop("context", None))
-        print("\n\n creating thread")
+        # print("\n\n onversable_agent.py  creating thread")
         response = llm_client.create(
             context=messages[-1].pop("context", None), messages=all_messages, cache=cache, agent=self, response_format=response_format
         )
-        print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: response: ", response)
+        # print("\n\nconversable_agent.py in def _generate_oai_reply_from_client: response: ", response)
         
         llm_client.print_usage_summary(mode="actual")  # print actual usage summary, i.e., excluding cached usage
 
