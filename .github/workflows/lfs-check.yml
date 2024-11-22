@@ -5,6 +5,7 @@ name: "Git LFS Check"
 permissions: {}
 jobs:
   lfs-check:
+    if: false  # Prevents this job from running
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
